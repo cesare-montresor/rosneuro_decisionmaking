@@ -8,7 +8,7 @@ namespace rosneuro {
 
 Integrator::Integrator(void) : p_nh_("~") {
 	this->sub_topic_data_	= "/smrbci/neuroprediction";
-	this->pub_topic_idata_  = "integrated_neuroprediction"; 
+	this->pub_topic_idata_  = "/neuroprediction"; 
 	this->pub_topic_edata_  = "/events/bus"; 
 
 	
@@ -144,7 +144,7 @@ bool Integrator::Run() {
 	// Publish the event notified the new available command
 
 	if(this->intpp_(this->predicted_class_) > this->control_thr_ && this->new_command_ == true) {
-		ROS_INFO("New command");
+	ROS_INFO("New command");
 	 this->emsg_.header = this->imsg_.header;
 	 this->emsg_.header.stamp = ros::Time::now();
 	 this->emsg_.event = BCI_COMMANDS[this->predicted_class_] + COMMAND;
