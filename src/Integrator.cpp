@@ -64,12 +64,12 @@ bool Integrator::configure(void) {
 }
 
 void Integrator::SetRejection(float value) {
-	ROS_INFO("Rejection value set at ", value);
+	ROS_INFO("Rejection value set at %f", value);
 	this->rejection_thr_ = value;
 }
 
 void Integrator::SetIntegration(float value) {
-	ROS_INFO("Integration value set at ", value);
+	ROS_INFO("Integration value set at %f", value);
 	this->integration_thr_ = value;
 	this->integrator_->SetAlpha(this->integration_thr_);
 }
