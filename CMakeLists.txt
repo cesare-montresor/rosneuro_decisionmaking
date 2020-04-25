@@ -9,10 +9,12 @@ find_package(catkin REQUIRED COMPONENTS
 			 rosneuro_data
 			 rosneuro_msgs)
 find_package(Eigen3 REQUIRED)
+find_package(PkgConfig)
+pkg_search_module(WTKPROCESSING REQUIRED wtkprocessing)
 
 SET(CMAKE_BUILD_TYPE RelWithDebInfo)
-find_library(WTKPROCESSING_LIBRARIES libwtkprocessing)
-find_path(WTKPROCESSING_INCLUDE_DIRS wtkprocessing)
+#find_library(WTKPROCESSING_LIBRARIES wtkprocessing)
+#find_path(WTKPROCESSING_INCLUDE_DIRS Buffer.hpp)
 
 catkin_package(
   INCLUDE_DIRS 
@@ -24,9 +26,7 @@ catkin_package(
 	std_msgs
 	rosneuro_data
 	rosneuro_msgs
-
   DEPENDS
-  Eigen3
 )
 
 ###########
@@ -34,7 +34,7 @@ catkin_package(
 ###########
 
 include_directories(${catkin_INCLUDE_DIRS} 
-                    ${EIGEN3_INCLUDE_DIRS}
+                    ${Eigen3_INCLUDE_DIRS}
 		    ${WTKPROCESSING_INCLUDE_DIRS}
 		    include
 		    
@@ -50,6 +50,7 @@ add_library(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME} 
 		     ${catkin_LIBRARIES} 
 		     ${WTKPROCESSING_LIBRARIES}
+			 ${Eigen3_LIBRARIES}
 )
 
 add_dependencies(${PROJECT_NAME} 
@@ -62,7 +63,7 @@ add_dependencies(${PROJECT_NAME}
 #################
 
 
-add_executable(test src/test.cpp)
-target_link_libraries(test rosneuro_decisionmaking)
+add_executable(test_decisionmaking src/test_decisionmaking.cpp)
+target_link_libraries(test_decisionmaking rosneuro_decisionmaking)
 
 
