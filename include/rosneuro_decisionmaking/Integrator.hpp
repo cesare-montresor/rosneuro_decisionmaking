@@ -76,7 +76,7 @@ class Integrator {
 
 		
 		float 		rejection_thr_;
-		float 		integration_thr_;
+		float 		integration_alpha_;
 		unsigned int	n_classes_;
 		unsigned int    predicted_class_;
 		std::vector<int> hard_prediction_;
@@ -87,19 +87,6 @@ class Integrator {
 		Eigen::VectorXd intpp_;
 
 		wtk::proc::Exponential*	integrator_; 
-
-	
-		
-		
-		/////////////////////////////////////////////////////////////////	
-		//Gloria Beraldo:
-		// TO DO REMOVE JUST TO TEST
-
-		int direction_ = 1;
-		float increment_ = 0.001f;
-		//////////////////////////////////////////////////////////////
-
-
 
 };
 

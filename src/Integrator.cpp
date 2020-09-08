@@ -8,7 +8,7 @@ namespace rosneuro {
 
 Integrator::Integrator(void) : p_nh_("~") {
 	this->sub_topic_data_	= "/smrbci/neuroprediction";
-	this->pub_topic_idata_  = "/neuroprediction"; 
+	this->pub_topic_idata_  = "/integrator/neuroprediction"; 
 	this->pub_topic_edata_  = "/events/bus"; 
 
 	
@@ -22,7 +22,7 @@ Integrator::~Integrator(void) {
 bool Integrator::configure(void) {
 
 	ros::param::param("~rejection_thr",  this->rejection_thr_, 0.55f); 
-	ros::param::param("~integration_thr", this->integration_thr_, 0.96f);
+	ros::param::param("~integration_alpha", this->integration_alpha_, 0.96f);
 
 	ros::param::param("~n_classes", (int&) this->n_classes_, 2);
 
@@ -30,11 +30,11 @@ bool Integrator::configure(void) {
 	// Setup integrator
 	// Gloria Beraldo: TO DO generalize with different kind of integrator
 
-	if(this->integrator_type_.std::string::compare("Exponential")==0) {
+	//if(this->integrator_type_.std::string::compare("Exponential")==0) {
 
 		// Setup Integrator
-		this->integrator_ = new wtk::proc::Exponential(this->integration_thr_, this->n_classes_);
-	}
+		this->integrator_ = new wtk::proc::Exponential(this->integration_alpha_, this->n_classes_);
+	//}
 
 
 	this->rawpp_ = Eigen::VectorXd::Zero(this->n_classes_);
@@ -70,26 +70,19 @@ void Integrator::SetRejection(float value) {
 
 void Integrator::SetIntegration(float value) {
 	ROS_INFO("Integration value set at %f", value);
-	this->integration_thr_ = value;
-	this->integrator_->SetAlpha(this->integration_thr_);
+	this->integration_alpha_ = value;
+	this->integrator_->SetAlpha(this->integration_alpha_);
 }
 
 void Integrator::Reset(void) {
-	ROS_INFO("Reset Probabilities");
+	ROS_INFO("Reset Probabilities"); 
 	this->integrator_->Reset();
 	this->intpp_.fill(0.5);
 
-
-	///////////////////////////////////////////////////
-	srand(time(NULL));
-	this->direction_ = rand()%2; // to remove
-	/////////////////////////////////////////////////////
-
-	this->imsg_.header.stamp = ros::Time::now();
-	this->imsg_.softpredict.data = std::vector<float>(this->rawpp_.data(), this->rawpp_.data() + this->rawpp_.rows() * this->rawpp_.cols());
-	this->pub_idata_.publish(this->imsg_);
+	//this->imsg_.header.stamp = ros::Time::now();
+	//this->imsg_.softpredict.data = std::vector<float>(this->rawpp_.data(), this->rawpp_.data() + this->rawpp_.rows() * this->rawpp_.cols());
+	//this->pub_idata_.publish(this->imsg_);
 	this->new_command_ = true;
-	 
 
 }
 
@@ -114,22 +107,18 @@ bool Integrator::Run() {
 
 	if(this->new_raw_prob_== false)
 	{
-		ROS_WARN("Not available raw probabilities to integrate");
+		//ROS_WARN("Not available raw probabilities to integrate");
 		return false;
 	}
-
-
-	Integrator::SimulateData(); // TO REMOVE
 
 	if(this->rawpp_.maxCoeff(&this->predicted_class_) > this->rejection_thr_) {
 
 		// Apply integration
-		//this->integrator_->Apply(this->rawpp_, this->intpp_);	
+		this->integrator_->Apply(this->rawpp_, this->intpp_);	
 		
 	}  
 
 	// Publish the integrated probability
-
 	this->imsg_.header.stamp = ros::Time::now();
 	this->imsg_.softpredict.data = std::vector<float>(this->intpp_.data(), this->intpp_.data() + this->intpp_.rows() * this->intpp_.cols());
 	this->intpp_.maxCoeff(&this->predicted_class_);
@@ -142,7 +131,7 @@ bool Integrator::Run() {
 
 	
 	// Publish the event notified the new available command
-
+	// Stefano TO DO: move command check to another node
 	if(this->intpp_(this->predicted_class_) > this->control_thr_ && this->new_command_ == true) {
 	ROS_INFO("New command");
 	 this->emsg_.header = this->imsg_.header;
@@ -159,29 +148,6 @@ bool Integrator::Run() {
 	this-> new_raw_prob_ = false;
 
 }
-
-
-
-void Integrator::SimulateData() {	// TO REMOVE JUST TO SIMULATE THE BCI
-
-	float noise = float(rand()) / float(RAND_MAX) * (0.0003*2) - 0.0003; // TO REMOVE
-	float value = this->increment_ + noise;
-
-
-	if(this->direction_==1) {
-			
-	  this->intpp_(this->direction_) = this->intpp_(this->direction_) + value;
-	  this->intpp_(this->direction_ -1) = 1- this->intpp_(this->direction_);
-	}
-
-	else {
-	  this->intpp_(this->direction_) = this->intpp_(this->direction_) + value;
-	  this->intpp_(this->direction_ +1) = 1- this->intpp_(this->direction_);
-
-	}
-
-}
-
 
 
 bool Integrator::on_request_integrate(std_srvs::Empty::Request& req,
