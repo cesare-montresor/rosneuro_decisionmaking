@@ -19,7 +19,7 @@ int main(int argc, char** argv) {
 	{
 
 	 if(integrator.Run() == true) {
-	   std::cout <<"Integrate" << std::endl; 
+	   //std::cout <<"Integrate" << std::endl; 
 	 } 
 	
          ros::spinOnce();
