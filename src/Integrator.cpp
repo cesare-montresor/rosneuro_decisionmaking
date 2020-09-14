@@ -49,8 +49,18 @@ bool Integrator::configure(void) {
 	this->pub_idata_ = this->p_nh_.advertise<rosneuro_msgs::NeuroOutput>(this->pub_topic_idata_, 1); 
 	this->pub_edata_ = this->p_nh_.advertise<rosneuro_msgs::NeuroEvent>(this->pub_topic_edata_, 1); 
 
-	ros::param::param("~control_thr", this->control_thr_, 0.7f);
-	
+	//ros::param::param("~control_thr", this->control_thr_, 0.7f);
+
+	float default_th_value = (float) 1/this->n_classes_;
+	for(int i=0; i<this->n_classes_;i++) {
+			this->control_default_thr_.push_back(default_th_value);
+
+	}
+
+	ros::param::param<std::vector<float> >("~control_thr",  this->control_thr_, this->control_default_thr_);
+
+	//ROS_DEBUG("Check threshold %f %f", this->control_thr_.at(0), this->control_thr_.at(1));
+
 	this->srv_integrate_   =  this->p_nh_.advertiseService("integrate",  &Integrator::on_request_integrate, this);
 	this->srv_reset_   =  this->p_nh_.advertiseService("reset",  &Integrator::on_request_reset, this);
 
@@ -132,7 +142,8 @@ bool Integrator::Run() {
 	
 	// Publish the event notified the new available command
 	// Stefano TO DO: move command check to another node
-	if(this->intpp_(this->predicted_class_) > this->control_thr_ && this->new_command_ == true) {
+	//if(this->intpp_(this->predicted_class_) > this->control_thr_ && this->new_command_ == true) {
+	if(this->intpp_(this->predicted_class_) > this->control_thr_.at(this->predicted_class_) && this->new_command_ == true) {
 	ROS_INFO("New command");
 	 this->emsg_.header = this->imsg_.header;
 	 this->emsg_.header.stamp = ros::Time::now();

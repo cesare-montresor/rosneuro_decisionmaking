@@ -65,7 +65,9 @@ class Integrator {
 		std::string                integrator_type_;
 		bool 			   new_raw_prob_;
 		bool                       new_command_;
-		float 			   control_thr_; 
+		//float 			   control_thr_; 
+		std::vector<float>         control_thr_;
+		std::vector<float>         control_default_thr_;
 	
 		rosneuro_msgs::NeuroOutput imsg_; 
 		rosneuro_msgs::NeuroEvent  emsg_;
