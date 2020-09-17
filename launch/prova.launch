@@ -1,0 +1,8 @@
+<launch>
+
+  <node name="integrator" pkg="rosneuro_decisionmaking" type="test_decisionmaking" output="screen">
+    <rosparam param="control_thr1">[0.5, 0.7]</rosparam>
+  </node>
+
+</launch>
+
