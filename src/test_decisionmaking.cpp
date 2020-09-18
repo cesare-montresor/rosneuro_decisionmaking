@@ -15,7 +15,7 @@ int main(int argc, char** argv) {
 	}
 
 	ros::Rate r(100);
-	while(true)
+	while(ros::ok())
 	{
 
 	 if(integrator.Run() == true) {
