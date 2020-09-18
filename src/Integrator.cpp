@@ -59,7 +59,7 @@ bool Integrator::configure(void) {
 
 	ros::param::param<std::vector<float> >("~control_thr",  this->control_thr_, this->control_default_thr_);
 
-	//ROS_DEBUG("Check threshold %f %f", this->control_thr_.at(0), this->control_thr_.at(1));
+	ROS_INFO("Check threshold %f %f", this->control_thr_.at(0), this->control_thr_.at(1));
 
 	this->srv_integrate_   =  this->p_nh_.advertiseService("integrate",  &Integrator::on_request_integrate, this);
 	this->srv_reset_   =  this->p_nh_.advertiseService("reset",  &Integrator::on_request_reset, this);
