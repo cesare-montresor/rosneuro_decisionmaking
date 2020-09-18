@@ -7,7 +7,8 @@ find_package(catkin REQUIRED COMPONENTS
 			 roscpp 
 			 std_msgs
 			 rosneuro_data
-			 rosneuro_msgs)
+			 rosneuro_msgs
+			 dynamic_reconfigure)
 find_package(Eigen3 REQUIRED)
 find_package(PkgConfig)
 pkg_search_module(WTKPROCESSING REQUIRED wtkprocessing)
@@ -15,6 +16,10 @@ pkg_search_module(WTKPROCESSING REQUIRED wtkprocessing)
 SET(CMAKE_BUILD_TYPE RelWithDebInfo)
 #find_library(WTKPROCESSING_LIBRARIES wtkprocessing)
 #find_path(WTKPROCESSING_INCLUDE_DIRS Buffer.hpp)
+
+generate_dynamic_reconfigure_options(
+	cfg/DynamicIntegrator.cfg
+)
 
 catkin_package(
   INCLUDE_DIRS 
@@ -28,6 +33,7 @@ catkin_package(
 	rosneuro_msgs
   DEPENDS
 )
+
 
 ###########
 ## Build ##
@@ -45,6 +51,7 @@ add_definitions(${EIGEN3_DEFINITIONS})
 
 add_library(${PROJECT_NAME}
 	src/Integrator.cpp
+	src/DynamicIntegrator.cpp
 )
 
 target_link_libraries(${PROJECT_NAME} 
@@ -65,5 +72,10 @@ add_dependencies(${PROJECT_NAME}
 
 add_executable(test_decisionmaking src/test_decisionmaking.cpp)
 target_link_libraries(test_decisionmaking rosneuro_decisionmaking)
+
+add_executable(integrator src/integrator.cpp)
+target_link_libraries(integrator rosneuro_decisionmaking)
+add_dependencies(integrator ${PROJECT_NAME}_gencfg)
+
 
 
