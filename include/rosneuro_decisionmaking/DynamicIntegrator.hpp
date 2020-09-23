@@ -13,7 +13,7 @@
 
 namespace rosneuro {
 
-int BCI_COMMAND[2] = {773, 771};
+int BCI_COMMAND[2] = {771, 773};
 int MASK_COMMAND   = 899;
 
 typedef dynamic_reconfigure::Server<rosneuro_decisionmaking::DynamicIntegratorConfig> DynamicIntegratorReconfig;
