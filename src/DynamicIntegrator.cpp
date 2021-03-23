@@ -66,6 +66,8 @@ bool DynamicIntegrator::on_request_reset(std_srvs::Empty::Request& req,
 
 	ROS_INFO("Reset probabilities requested");
 	this->y_t_ = 0.5f;
+
+	return true;
 }
 
 bool DynamicIntegrator::Run(void) {

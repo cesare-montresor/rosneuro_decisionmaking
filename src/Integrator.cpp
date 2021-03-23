@@ -157,6 +157,7 @@ bool Integrator::Run() {
 
 	
 	this-> new_raw_prob_ = false;
+	return true;
 
 }
 
